@@ -130,7 +130,7 @@ class DocumentParser:
             start = end - chunk_overlap
 
             # Prevent infinite loop
-            if start <= end - chunk_size + chunk_overlap:
+            if end - chunk_overlap <= start:
                 start = end
 
         return chunks
