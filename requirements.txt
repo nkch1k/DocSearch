@@ -1,0 +1,32 @@
+# FastAPI and web server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Vector store
+qdrant-client==1.7.0
+
+# Embeddings and LLM
+openai==1.10.0
+sentence-transformers==2.3.1
+
+# Document parsing
+PyPDF2==3.0.1
+pypdf==4.0.1
+python-docx==1.1.0
+markdown==3.5.2
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Text processing
+langchain==0.1.4
+langchain-openai==0.0.5
+tiktoken==0.5.2
