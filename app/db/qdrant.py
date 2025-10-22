@@ -224,7 +224,7 @@ class QdrantManager:
         try:
             info = self.client.get_collection(self.collection_name)
             return {
-                "name": info.config.params.vectors.size if hasattr(info.config.params, 'vectors') else None,
+                "name": self.collection_name,
                 "vectors_count": info.vectors_count if hasattr(info, 'vectors_count') else 0,
                 "points_count": info.points_count if hasattr(info, 'points_count') else 0,
                 "status": info.status.value if hasattr(info, 'status') else "unknown"
