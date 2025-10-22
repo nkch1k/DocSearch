@@ -254,13 +254,12 @@ async def delete_document(
         # Delete from Qdrant
         await qdrant_manager.delete_document(document_id)
 
-        # Delete file from disk
-        if os.path.exists(document.file_path):
-            os.remove(document.file_path)
-
         # Delete from PostgreSQL
         await repo.delete_document(document_id)
 
+        # Delete file from disk
+        if os.path.exists(document.file_path):
+            os.remove(document.file_path)
         return {
             "status": "success",
             "message": f"Document {document_id} deleted successfully"
