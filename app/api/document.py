@@ -363,27 +363,16 @@ async def get_statistics(db: AsyncSession = Depends(get_db)):
         Statistics about uploaded documents
     """
     repo = DocumentRepository(db)
-    documents = await repo.get_all_documents(skip=0, limit=10000)
-
-    total_documents = len(documents)
-    total_size = sum(doc.file_size for doc in documents)
-    total_chunks = sum(doc.num_chunks for doc in documents)
-
-    by_type = {}
-    by_status = {}
-
-    for doc in documents:
-        by_type[doc.file_type] = by_type.get(doc.file_type, 0) + 1
-        by_status[doc.status] = by_status.get(doc.status, 0) + 1
+    stats = await repo.get_document_stats()
 
     # Get Qdrant collection info
     collection_info = await qdrant_manager.get_collection_info()
 
     return {
-        "total_documents": total_documents,
-        "total_size_bytes": total_size,
-        "total_chunks": total_chunks,
-        "by_file_type": by_type,
-        "by_status": by_status,
+        "total_documents": stats["total_documents"],
+        "total_size_bytes": stats["total_size"],
+        "total_chunks": stats["total_chunks"],
+        "by_file_type": stats["by_type"],
+        "by_status": stats["by_status"],
         "vector_store": collection_info
     }
