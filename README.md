@@ -10,6 +10,9 @@ Document search and retrieval system with semantic search capabilities.
 - Vector embeddings generation
 - Semantic search using Qdrant
 - Metadata storage in PostgreSQL
+- **RAG (Retrieval-Augmented Generation)** - AI-powered question answering
+- **LLM Integration** - OpenAI GPT models for answer generation
+- Hybrid retrieval (vector search + PostgreSQL fallback)
 - RESTful API with FastAPI
 
 ## Architecture
@@ -152,6 +155,95 @@ GET /api/documents/stats/overview
 curl "http://localhost:8000/api/documents/stats/overview"
 ```
 
+---
+
+## RAG (Question Answering) Endpoints
+
+### Ask Question
+Ask a question and get an AI-generated answer based on your documents:
+
+```bash
+POST /api/answer/ask
+Content-Type: application/json
+
+curl -X POST "http://localhost:8000/api/answer/ask" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Что такое машинное обучение?",
+    "top_k": 5,
+    "score_threshold": 0.3,
+    "temperature": 0.7
+  }'
+```
+
+Response:
+```json
+{
+  "question": "Что такое машинное обучение?",
+  "answer": "Машинное обучение - это...",
+  "sources": [
+    {
+      "document_id": 1,
+      "filename": "ml_guide.pdf",
+      "file_type": "pdf",
+      "relevance_score": 0.85
+    }
+  ],
+  "chunks_used": [...],
+  "model": "gpt-4o-mini",
+  "tokens_used": {
+    "prompt": 450,
+    "completion": 200,
+    "total": 650
+  },
+  "retrieval_method": "vector_search",
+  "processing_time_ms": 1234.56
+}
+```
+
+### Summarize Document
+Generate a summary of a specific document:
+
+```bash
+POST /api/answer/summarize
+Content-Type: application/json
+
+curl -X POST "http://localhost:8000/api/answer/summarize" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_id": 1,
+    "max_length": 200
+  }'
+```
+
+### Health Check
+Check the health of RAG system components:
+
+```bash
+GET /api/answer/health
+
+curl "http://localhost:8000/api/answer/health"
+```
+
+Response:
+```json
+{
+  "status": "healthy",
+  "llm_available": true,
+  "vector_db_available": true,
+  "postgres_available": true
+}
+```
+
+### Get Document Context
+Get full context of a document (for debugging):
+
+```bash
+GET /api/answer/context/{document_id}
+
+curl "http://localhost:8000/api/answer/context/1"
+```
+
 ## Configuration
 
 Configuration is managed through environment variables in `.env` file:
@@ -170,6 +262,10 @@ Configuration is managed through environment variables in `.env` file:
 | `EMBEDDING_DIMENSION` | Embedding vector size | 384 |
 | `CHUNK_SIZE` | Text chunk size | 500 |
 | `CHUNK_OVERLAP` | Chunk overlap size | 50 |
+| `OPENAI_API_KEY` | OpenAI API key (required for RAG) | - |
+| `LLM_MODEL` | OpenAI model to use | gpt-4o-mini |
+| `LLM_MAX_TOKENS` | Max tokens in LLM response | 1000 |
+| `LLM_TEMPERATURE` | LLM temperature (0-2) | 0.7 |
 | `MAX_FILE_SIZE` | Max upload size (bytes) | 10485760 (10MB) |
 
 ## Development
@@ -180,15 +276,21 @@ Configuration is managed through environment variables in `.env` file:
 DocSearch/
 ├── app/
 │   ├── api/
-│   │   └── document.py      # REST API endpoints
+│   │   ├── document.py      # Document API endpoints
+│   │   └── answer.py        # RAG/QA API endpoints
 │   ├── core/
 │   │   ├── config.py
 │   │   └── settings.py      # Application settings
 │   ├── db/
 │   │   ├── postgres.py      # PostgreSQL operations
 │   │   └── qdrant.py        # Qdrant operations
+│   ├── models/
+│   │   ├── document.py      # Document models
+│   │   └── answer.py        # Answer/RAG models
 │   ├── services/
 │   │   ├── embedding.py     # Embedding generation
+│   │   ├── llm.py           # LLM integration (OpenAI)
+│   │   ├── retrieval.py     # Context retrieval
 │   │   └── parse.py         # Document parsing
 │   └── main.py              # FastAPI application
 ├── tests/

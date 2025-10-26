@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.core.settings import settings
 from app.db.postgres import init_db
 from app.db.qdrant import qdrant_manager
-from app.api import document
+from app.api import document, answer
 
 
 @asynccontextmanager
@@ -53,6 +53,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(document.router)
+app.include_router(answer.router)
 
 
 @app.get("/")
@@ -67,7 +68,10 @@ async def root():
             "upload": "/api/documents/upload",
             "list": "/api/documents/",
             "search": "/api/documents/search/query",
-            "stats": "/api/documents/stats/overview"
+            "stats": "/api/documents/stats/overview",
+            "ask": "/api/answer/ask",
+            "summarize": "/api/answer/summarize",
+            "health": "/api/answer/health"
         }
     }
 
