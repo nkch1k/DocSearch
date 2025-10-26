@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     # OpenAI (optional, for better embeddings)
     OPENAI_API_KEY: Optional[str] = None
 
+    # LLM Settings
+    LLM_MODEL: str = "gpt-4o-mini"  # or "gpt-4", "gpt-3.5-turbo"
+    LLM_MAX_TOKENS: int = 1000
+    LLM_TEMPERATURE: float = 0.7
+
     # File upload
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
     ALLOWED_EXTENSIONS: list[str] = [".pdf", ".md", ".txt"]
