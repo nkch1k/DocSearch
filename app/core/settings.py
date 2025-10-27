@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Database
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_PASSWORD: str  # Load from .env - no default for security!
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "docsearch"
